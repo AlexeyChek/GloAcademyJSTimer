@@ -3,8 +3,6 @@ const hi = document.getElementById('hi'),
   time = document.getElementById('time'),
   newYear = document.getElementById('newYear');
 
-const date = new Date();
-
 const getDayTime = (date)=>{
   const hour = date.getHours();
   if (hour > 18 && hour < 22) return 'Добрый вечер';
@@ -39,7 +37,13 @@ const getDayByNewYearText = (date)=>{
   }
 };
 
-hi.textContent = getDayTime(date);
-day.textContent = 'Сегодня: ' + getDayWeek(date);
-time.textContent = 'Текущее время: ' + date.toLocaleTimeString('en');
-newYear.textContent = 'До нового года осталось ' + getDayByNewYearText(date);
+const update = () => {
+  const date = new Date();
+  hi.textContent = getDayTime(date);
+  day.textContent = 'Сегодня: ' + getDayWeek(date);
+  time.textContent = 'Текущее время: ' + date.toLocaleTimeString('en');
+  newYear.textContent = 'До нового года осталось ' + getDayByNewYearText(date);
+};
+
+setInterval(update, 1000);
+

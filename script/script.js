@@ -1,3 +1,5 @@
+'use strict';
+
 // Таймер
 const counTimer = deadLine => {
   const timerDays = document.getElementById('timer-days'),
@@ -31,6 +33,7 @@ const counTimer = deadLine => {
       clearInterval(intervalId);
     }
   };
+  updateClock();
   const intervalId = setInterval(updateClock, 1000);
 };
 
@@ -60,7 +63,7 @@ const togglePopup = () => {
 
   const popupAnimate = () => {
     let position = -100;
-    let timer = setInterval(() => {
+    const timer = setInterval(() => {
       position++;
       popup.style.transform = 'translate(' + position + '%)';
       if (position >= 0) {
@@ -76,7 +79,7 @@ const togglePopup = () => {
       if (document.documentElement.clientWidth > 768) {
         popup.style.transform = 'translate(-100%)';
         popupAnimate();
-      };
+      }
     });
   });
 
@@ -86,4 +89,3 @@ const togglePopup = () => {
 };
 
 togglePopup();
-
