@@ -56,28 +56,75 @@ const toggleMenu = () => {
 toggleMenu();
 
 // popup
+// const togglePopup = () => {
+//   let count = '-20';
+//   const popup = document.querySelector('.popup'),
+//     popupBtn = document.querySelectorAll('.popup-btn'),
+//     popupClose = document.querySelector('.popup-close'),
+//     popupContent = document.querySelector('.popup-content');
+//     popup.style.transition = 'all 1s ease';
+//     let idAnimate;
+
+//   const popupAnimate = () => {
+//     let position = -400;
+//     let rgba = 0;
+//     const timerContent = setInterval(() => {
+//       position += 2;
+//       popupContent.style.transform = 'translateX(' + position + '%)';
+//       if (position >= 0) {
+//         popup.style.transform = 'translateX(0)';
+//         clearInterval(timerContent);
+//       }
+//     }, 1);
+//     const timerOverlay = setInterval(() => {
+//       rgba += 0.002;
+//       popup.style.backgroundColor = 'rgba(0, 0, 0, ' + rgba + ')';
+//       if (rgba >= 0.5) clearInterval(timerOverlay);
+//     }, 1);
+//   };
+
+//   popupBtn.forEach(elem => {
+//     elem.addEventListener('click', () => {
+//       popup.style.display = 'block';
+//       if (document.documentElement.clientWidth > 768) {
+//         popup.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+//         popupContent.style.transform = 'translateX(-400%)';
+//         popupAnimate();
+//       }
+//     });
+//   });
+
+//   popupClose.addEventListener('click', () => {
+//     popup.style.display = 'none';
+//   });
+// };
+
 const togglePopup = () => {
   const popup = document.querySelector('.popup'),
     popupBtn = document.querySelectorAll('.popup-btn'),
     popupClose = document.querySelector('.popup-close'),
     popupContent = document.querySelector('.popup-content');
+  popup.style.transition = 'all 1s ease';
+
+  let position = -100;
+  let rgba = 0;
+  let animateId;
 
   const popupAnimate = () => {
-    let position = -400;
-    let rgba = 0;
-    const timerContent = setInterval(() => {
-      position += 2;
-      popupContent.style.transform = 'translate(' + position + '%)';
-      if (position >= 0) {
-        popup.style.transform = 'translate(0)';
-        clearInterval(timerContent);
-      }
-    }, 1);
-    const timerOverlay = setInterval(() => {
-      rgba += 0.003;
+    animateId = requestAnimationFrame(popupAnimate);
+    position += 3;
+    rgba += 0.01;
+    if (position < 0) {
+      popupContent.style.transform = 'translateX(' + position + '%)';
+    }
+    if (rgba < 0.5) {
       popup.style.backgroundColor = 'rgba(0, 0, 0, ' + rgba + ')';
-      if (rgba >= 0.5) clearInterval(timerOverlay);
-    }, 1);
+    }
+    if (rgba >= 0.5 && position >= 0) {
+      cancelAnimationFrame(animateId);
+      position = -100;
+      rgba = 0;
+    }
   };
 
   popupBtn.forEach(elem => {
@@ -85,7 +132,7 @@ const togglePopup = () => {
       popup.style.display = 'block';
       if (document.documentElement.clientWidth > 768) {
         popup.style.backgroundColor = 'rgba(0, 0, 0, 0)';
-        popupContent.style.transform = 'translate(-400%)';
+        popupContent.style.transform = `translateX(${position}%)`;
         popupAnimate();
       }
     });
