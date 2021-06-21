@@ -59,17 +59,24 @@ toggleMenu();
 const togglePopup = () => {
   const popup = document.querySelector('.popup'),
     popupBtn = document.querySelectorAll('.popup-btn'),
-    popupClose = document.querySelector('.popup-close');
+    popupClose = document.querySelector('.popup-close'),
+    popupContent = document.querySelector('.popup-content');
 
   const popupAnimate = () => {
-    let position = -100;
-    const timer = setInterval(() => {
-      position++;
-      popup.style.transform = 'translate(' + position + '%)';
+    let position = -400;
+    let rgba = 0;
+    const timerContent = setInterval(() => {
+      position += 2;
+      popupContent.style.transform = 'translate(' + position + '%)';
       if (position >= 0) {
         popup.style.transform = 'translate(0)';
-        clearInterval(timer);
+        clearInterval(timerContent);
       }
+    }, 1);
+    const timerOverlay = setInterval(() => {
+      rgba += 0.003;
+      popup.style.backgroundColor = 'rgba(0, 0, 0, ' + rgba + ')';
+      if (rgba >= 0.5) clearInterval(timerOverlay);
     }, 1);
   };
 
@@ -77,7 +84,8 @@ const togglePopup = () => {
     elem.addEventListener('click', () => {
       popup.style.display = 'block';
       if (document.documentElement.clientWidth > 768) {
-        popup.style.transform = 'translate(-100%)';
+        popup.style.backgroundColor = 'rgba(0, 0, 0, 0)';
+        popupContent.style.transform = 'translate(-400%)';
         popupAnimate();
       }
     });
