@@ -1,6 +1,6 @@
 'use strict';
 
-// Таймер
+// Timer
 const counTimer = deadLine => {
   const timerDays = document.getElementById('timer-days'),
     timerHours = document.getElementById('timer-hours'),
@@ -38,7 +38,7 @@ const counTimer = deadLine => {
 };
 counTimer('19 july 2021 22:00:00');
 
-// Меню
+// Menu
 const toggleMenu = () => {
   const btnMenu = document.querySelector('.menu'),
     menu = document.querySelector('menu'),
@@ -48,8 +48,21 @@ const toggleMenu = () => {
   const handlerMenu = () => menu.classList.toggle('active-menu');
 
   btnMenu.addEventListener('click', handlerMenu);
-  closeBtn.addEventListener('click', handlerMenu);
-  menuItems.forEach(elem => elem.addEventListener('click', handlerMenu));
+
+  menu.addEventListener('click', (event) => {
+    let target = event.target;
+    if (target.classList.contains('close-btn')) {
+      handlerMenu();
+    } else {
+      target = target.closest('li');
+      if (target) {
+        handlerMenu();
+      }
+    }
+  });
+
+  // closeBtn.addEventListener('click', handlerMenu);
+  // menuItems.forEach(elem => elem.addEventListener('click', handlerMenu));
 };
 toggleMenu();
 
@@ -57,7 +70,6 @@ toggleMenu();
 const togglePopup = () => {
   const popup = document.querySelector('.popup'),
     popupBtn = document.querySelectorAll('.popup-btn'),
-    popupClose = document.querySelector('.popup-close'),
     popupContent = document.querySelector('.popup-content');
   popup.style.transition = 'all 1s ease';
 
@@ -93,8 +105,50 @@ const togglePopup = () => {
     });
   });
 
-  popupClose.addEventListener('click', () => {
-    popup.style.display = 'none';
+  const closePopup = () => { popup.style.display = 'none'; };
+
+  popup.addEventListener('click', (event) => {
+    let target = event.target;
+    if (target.classList.contains('popup-close')) {
+      closePopup();
+    } else {
+      target = target.closest('.popup-content');
+      if (!target) {
+        closePopup();
+      }
+    }
   });
 };
 togglePopup();
+
+// tabs
+const tabs = () => {
+  const tabHeader = document.querySelector('.service-header'),
+    tab = document.querySelectorAll('.service-header-tab'),
+    tabContent = document.querySelectorAll('.service-tab');
+
+  const toggleTabContent = index => {
+    for (let i = 0; i < tabContent.length; i++) {
+      if (index === i) {
+        tabContent[i].classList.remove('d-none');
+        tab[i].classList.add('active');
+      } else {
+        tabContent[i].classList.add('d-none');
+        tab[i].classList.remove('active');
+      }
+    }
+  };
+
+  tabHeader.addEventListener('click', event => {
+    let target = event.target;
+    target = target.closest('.service-header-tab');
+    if (target) {
+      tab.forEach((item, i) => {
+        if (item === target) {
+          toggleTabContent(i);
+        }
+      });
+    }
+  });
+};
+tabs();
