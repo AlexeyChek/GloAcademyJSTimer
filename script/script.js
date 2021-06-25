@@ -242,3 +242,81 @@ const slider = () => {
   startSlide();
 };
 slider();
+
+// command
+const command = () => {
+  const command = document.querySelector('.command');
+
+  const changeImage = (elem) =>{
+    const image = elem.src;
+    elem.src = elem.dataset.img;
+    elem.dataset.img = image;
+  };
+
+  command.addEventListener('mouseover', (e) => {
+    if (e.target.closest('img')) changeImage(e.target);
+  });
+
+  command.addEventListener('mouseout', (e) => {
+    if (e.target.closest('img')) changeImage(e.target);
+  });
+};
+command();
+
+// calc
+const calc = () => {
+  const calc = document.querySelector('.calc');
+
+  const validate = (elem) => {
+    elem.value = elem.value.replace(/\D/g, '');
+  };
+
+  calc.addEventListener('input', (e) => {
+    if (e.target.closest('input')) {
+      validate(e.target);
+    }
+  });
+};
+calc();
+
+// connect
+const connect = () => {
+  const connect = document.querySelector('.connect');
+
+  const validateCyrillic = (elem) => {
+    elem.value = elem.value.replace(/[^а-я -]/gi, '');
+  };
+
+  const validateEmail = (elem) => {
+    elem.value = elem.value.replace(/[^a-z\_@\.!~\*'-]/gi, '');
+  };
+  const validatePhone = (elem) => {
+    elem.value = elem.value.replace(/[^0-9()-]/gi, '');
+  };
+
+  const validateEnd = (elem) => {
+    elem.value = elem.value.trim();
+    elem.value = elem.value.replace(/-+/g, '-');
+    elem.value = elem.value.replace(/ +/g, ' ');
+    elem.value = elem.value.replace(/^-/, '');
+    elem.value = elem.value.replace(/-$/, '');
+    if (elem.name === 'user_name') {
+      let text = elem.value.split(' ');
+      text.forEach((item, i) => {
+        text[i] = item[0].toUpperCase() + item.slice(1);
+      });
+      elem.value = text.join(' ');
+    }
+  };
+
+  connect.addEventListener('input', (e) => {
+    if (e.target.name === 'user_name' || e.target.name === 'user_message') validateCyrillic(e.target);
+    if (e.target.name === 'user_email') validateEmail(e.target);
+    if (e.target.name === 'user_phone') validatePhone(e.target);
+  });
+
+  connect.addEventListener('blur', (e) => {
+    if (e.target.closest('input')) validateEnd(e.target);
+  }, true);
+};
+connect();
