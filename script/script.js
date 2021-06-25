@@ -254,26 +254,88 @@ const command = () => {
   };
 
   command.addEventListener('mouseover', (e) => {
-    if (e.target.closest('img')) changeImage(e.target);
+    const target = e.target;
+    if (target.closest('img')) changeImage(target);
   });
 
   command.addEventListener('mouseout', (e) => {
-    if (e.target.closest('img')) changeImage(e.target);
+    const target = e.target;
+    if (target.closest('img')) changeImage(target);
   });
 };
 command();
 
 // calc
-const calc = () => {
-  const calc = document.querySelector('.calc');
+const calc = (price = 100) => {
+  const calc = document.querySelector('.calc'),
+    calcType = calc.querySelector('.calc-type'),
+    calcSquare = calc.querySelector('.calc-square'),
+    calcDay = calc.querySelector('.calc-day'),
+    calcCount = calc.querySelector('.calc-count'),
+    calcTotal = calc.querySelector('#total');
+  let interval;
+
+  const totalSum = () => {
+    let total = 0;
+    let countValue = 1;
+    let dayValue = 1;
+    const typeValue = calcType.options[calcType.selectedIndex].value;
+    const squareValue = +calcSquare.value;
+
+    if (calcCount.value > 1) {
+      countValue += (calcCount.value - 1) / 10;
+    }
+
+    if (calcDay.value && calcDay.value < 5) {
+      dayValue *= 2;
+    } else if (calcDay.value && calcDay.value < 10) {
+      dayValue *= 1.5;
+    }
+
+    if (typeValue && squareValue) {
+      total = price * typeValue * squareValue * countValue * dayValue;
+    } else {
+      total = 0;
+    }
+
+    return Math.floor(total);
+  };
+
+  const setTotal = (sum) => {
+    clearInterval(interval);
+    let total = +calcTotal.textContent;
+    if (total < sum) {
+      interval = setInterval(() => {
+        total++;
+        calcTotal.textContent = total;
+        if (total === sum) clearInterval(interval);
+      }, 1);
+    }
+    if (total > sum) {
+      interval = setInterval(() => {
+        total--;
+        calcTotal.textContent = total;
+        if (total === sum) clearInterval(interval);
+      }, 1);
+    }
+    calcTotal.textContent = sum;
+  };
+
+  calc.addEventListener('change', (e) => {
+    const target = e.target;
+    if (target === calcType || target === calcSquare || target === calcDay || target === calcCount) {
+      setTotal(totalSum());
+    }
+  });
 
   const validate = (elem) => {
     elem.value = elem.value.replace(/\D/g, '');
   };
 
   calc.addEventListener('input', (e) => {
-    if (e.target.closest('input')) {
-      validate(e.target);
+    const target = e.target;
+    if (target.closest('input')) {
+      validate(target);
     }
   });
 };
@@ -319,4 +381,4 @@ const connect = () => {
     if (e.target.closest('input')) validateEnd(e.target);
   }, true);
 };
-connect();
+connect(100);
