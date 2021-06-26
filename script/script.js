@@ -304,21 +304,26 @@ const calc = (price = 100) => {
   const setTotal = (sum) => {
     clearInterval(interval);
     let total = +calcTotal.textContent;
+    let step = (sum - total) / 500;
     if (total < sum) {
       interval = setInterval(() => {
-        total++;
-        calcTotal.textContent = total;
-        if (total === sum) clearInterval(interval);
+        total += step;
+        calcTotal.textContent = Math.floor(total);
+        if (total > sum) {
+          clearInterval(interval);
+          calcTotal.textContent = sum;
+        }
       }, 1);
-    }
-    if (total > sum) {
+    } else if (total > sum) {
       interval = setInterval(() => {
-        total--;
-        calcTotal.textContent = total;
-        if (total === sum) clearInterval(interval);
+        total += step;
+        calcTotal.textContent = Math.floor(total);
+        if (total < sum) {
+          clearInterval(interval);
+          calcTotal.textContent = sum;
+        }
       }, 1);
     }
-    calcTotal.textContent = sum;
   };
 
   calc.addEventListener('change', (e) => {
