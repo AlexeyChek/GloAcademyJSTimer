@@ -280,6 +280,12 @@ const calc = (price = 100) => {
     let countValue = 1;
     let dayValue = 1;
     const typeValue = calcType.options[calcType.selectedIndex].value;
+    if (typeValue === '') {
+      calcSquare.value = '';
+      calcDay.value = '';
+      calcCount.value = '';
+      return 0;
+    }
     const squareValue = +calcSquare.value;
 
     if (calcCount.value > 1) {
