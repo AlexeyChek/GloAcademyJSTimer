@@ -175,12 +175,12 @@ const slider = () => {
   const prevSlide = (elem, index, strClass) => {
     elem[index].classList.remove(strClass);
   };
-  
+
   const nextSlide = (elem, index, strClass) => {
     elem[index].classList.add(strClass);
   };
-  
-  
+
+
   const autoPlaySlide = () => {
     prevSlide(slide, currentSlide, 'portfolio-item-active');
     prevSlide(dot, currentSlide, 'dot-active');
@@ -189,25 +189,25 @@ const slider = () => {
     nextSlide(slide, currentSlide, 'portfolio-item-active');
     nextSlide(dot, currentSlide, 'dot-active');
   };
-  
+
   const startSlide = (time = 3000) => {
     interval = setInterval(autoPlaySlide, time);
   };
-  
+
   const stopSlide = () => {
     clearInterval(interval);
   };
-  
+
   slider.addEventListener('click', event => {
     event.preventDefault();
-    
+
     const target = event.target;
-    
+
     if (!target.matches('#arrow-right, #arrow-left, .dot')) return;
-    
+
     prevSlide(slide, currentSlide, 'portfolio-item-active');
     prevSlide(dot, currentSlide, 'dot-active');
-    
+
     if (target.matches('#arrow-right')) {
       currentSlide++;
     } else if (target.matches('#arrow-left')) {
@@ -221,23 +221,23 @@ const slider = () => {
     }
     if (currentSlide >= slide.length) currentSlide = 0;
     if (currentSlide < 0) currentSlide = slide.length - 1;
-    
+
     nextSlide(slide, currentSlide, 'portfolio-item-active');
     nextSlide(dot, currentSlide, 'dot-active');
   });
-  
+
   slider.addEventListener('mouseover', event => {
     if (event.target.matches('.portfolio-btn') || event.target.matches('.dot')) {
       stopSlide();
     }
   });
-  
+
   slider.addEventListener('mouseout', event => {
     if (event.target.matches('.portfolio-btn') || event.target.matches('.dot')) {
       startSlide();
     }
   });
-  
+
   nextSlide(dot, currentSlide, 'dot-active');
   startSlide();
 };
@@ -247,18 +247,18 @@ slider();
 const command = () => {
   const command = document.querySelector('.command');
 
-  const changeImage = (elem) =>{
+  const changeImage = elem => {
     const image = elem.src;
     elem.src = elem.dataset.img;
     elem.dataset.img = image;
   };
 
-  command.addEventListener('mouseover', (e) => {
+  command.addEventListener('mouseover', e => {
     const target = e.target;
     if (target.closest('img')) changeImage(target);
   });
 
-  command.addEventListener('mouseout', (e) => {
+  command.addEventListener('mouseout', e => {
     const target = e.target;
     if (target.closest('img')) changeImage(target);
   });
@@ -273,7 +273,7 @@ const calc = (price = 100) => {
     calcDay = calc.querySelector('.calc-day'),
     calcCount = calc.querySelector('.calc-count'),
     calcTotal = calc.querySelector('#total');
-  let interval;
+  let animateId;
 
   const totalSum = () => {
     let total = 0;
@@ -307,43 +307,44 @@ const calc = (price = 100) => {
     return Math.floor(total);
   };
 
-  const setTotal = (sum) => {
-    clearInterval(interval);
+  const setTotal = sum => {
+    console.log('sum: ', sum);
+    cancelAnimationFrame(animateId);
     let total = +calcTotal.textContent;
-    let step = (sum - total) / 500;
-    if (total < sum) {
-      interval = setInterval(() => {
-        total += step;
-        calcTotal.textContent = Math.floor(total);
-        if (total > sum) {
-          clearInterval(interval);
-          calcTotal.textContent = sum;
-        }
-      }, 1);
-    } else if (total > sum) {
-      interval = setInterval(() => {
-        total += step;
-        calcTotal.textContent = Math.floor(total);
-        if (total < sum) {
-          clearInterval(interval);
-          calcTotal.textContent = sum;
-        }
-      }, 1);
-    }
+    const step = (sum - total) / 120;
+
+    const animate = () => {
+      calcTotal.textContent = Math.floor(total);
+      if (step > 0 && total >= sum) {
+        calcTotal.textContent = sum;
+        cancelAnimationFrame(animateId);
+      } else if (step < 0 && total <= sum) {
+        calcTotal.textContent = sum;
+        cancelAnimationFrame(animateId);
+      } else {
+        requestAnimationFrame(animate);
+      }
+      console.log(total);
+      total += step;
+    };
+
+    if (sum !== total) animateId = requestAnimationFrame(animate);
+
+    console.log('end');
   };
 
-  calc.addEventListener('change', (e) => {
+  calc.addEventListener('change', e => {
     const target = e.target;
     if (target === calcType || target === calcSquare || target === calcDay || target === calcCount) {
       setTotal(totalSum());
     }
   });
 
-  const validate = (elem) => {
+  const validate = elem => {
     elem.value = elem.value.replace(/\D/g, '');
   };
 
-  calc.addEventListener('input', (e) => {
+  calc.addEventListener('input', e => {
     const target = e.target;
     if (target.closest('input')) {
       validate(target);
@@ -356,25 +357,25 @@ calc();
 const connect = () => {
   const connect = document.querySelector('.connect');
 
-  const validateCyrillic = (elem) => {
+  const validateCyrillic = elem => {
     elem.value = elem.value.replace(/[^а-я -]/gi, '');
   };
 
-  const validateEmail = (elem) => {
+  const validateEmail = elem => {
     elem.value = elem.value.replace(/[^a-z\_@\.!~\*'-]/gi, '');
   };
-  const validatePhone = (elem) => {
+  const validatePhone = elem => {
     elem.value = elem.value.replace(/[^0-9()-]/gi, '');
   };
 
-  const validateEnd = (elem) => {
+  const validateEnd = elem => {
     elem.value = elem.value.trim();
     elem.value = elem.value.replace(/-+/g, '-');
     elem.value = elem.value.replace(/ +/g, ' ');
     elem.value = elem.value.replace(/^-/, '');
     elem.value = elem.value.replace(/-$/, '');
     if (elem.name === 'user_name') {
-      let text = elem.value.split(' ');
+      const text = elem.value.split(' ');
       text.forEach((item, i) => {
         text[i] = item[0].toUpperCase() + item.slice(1);
       });
@@ -382,13 +383,13 @@ const connect = () => {
     }
   };
 
-  connect.addEventListener('input', (e) => {
+  connect.addEventListener('input', e => {
     if (e.target.name === 'user_name' || e.target.name === 'user_message') validateCyrillic(e.target);
     if (e.target.name === 'user_email') validateEmail(e.target);
     if (e.target.name === 'user_phone') validatePhone(e.target);
   });
 
-  connect.addEventListener('blur', (e) => {
+  connect.addEventListener('blur', e => {
     if (e.target.closest('input')) validateEnd(e.target);
   }, true);
 };
