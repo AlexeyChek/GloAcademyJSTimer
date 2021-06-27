@@ -308,7 +308,6 @@ const calc = (price = 100) => {
   };
 
   const setTotal = sum => {
-    console.log('sum: ', sum);
     cancelAnimationFrame(animateId);
     let total = +calcTotal.textContent;
     const step = (sum - total) / 120;
@@ -324,13 +323,10 @@ const calc = (price = 100) => {
       } else {
         requestAnimationFrame(animate);
       }
-      console.log(total);
       total += step;
     };
 
     if (sum !== total) animateId = requestAnimationFrame(animate);
-
-    console.log('end');
   };
 
   calc.addEventListener('change', e => {
