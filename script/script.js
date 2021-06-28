@@ -310,7 +310,7 @@ const calc = (price = 100) => {
   const setTotal = sum => {
     cancelAnimationFrame(animateId);
     let total = +calcTotal.textContent;
-    const step = (sum - total) / 120;
+    const step = (sum - total) / 60;
 
     const animate = () => {
       calcTotal.textContent = Math.floor(total);
@@ -349,19 +349,23 @@ const calc = (price = 100) => {
 };
 calc();
 
-// connect
-const connect = () => {
-  const connect = document.querySelector('.connect');
-
+// validate
+const validate = (elem) => {
   const validateCyrillic = elem => {
-    elem.value = elem.value.replace(/[^а-я -]/gi, '');
+    // elem.value = elem.value.replace(/[^а-я -]/gi, '');
+    elem.value = elem.value.replace(/[^а-я ]/gi, '');
+  };
+
+  const validateMassage = elem => {
+    elem.value = elem.value.replace(/[^а-я0-9 .,!?:;]/gi, '');
   };
 
   const validateEmail = elem => {
     elem.value = elem.value.replace(/[^a-z\_@\.!~\*'-]/gi, '');
   };
   const validatePhone = elem => {
-    elem.value = elem.value.replace(/[^0-9()-]/gi, '');
+    // elem.value = elem.value.replace(/[^0-9()-]/gi, '');
+    elem.value = elem.value.replace(/[^+0-9]/gi, '');
   };
 
   const validateEnd = elem => {
@@ -379,14 +383,148 @@ const connect = () => {
     }
   };
 
-  connect.addEventListener('input', e => {
-    if (e.target.name === 'user_name' || e.target.name === 'user_message') validateCyrillic(e.target);
+  elem.addEventListener('input', e => {
+    if (e.target.name === 'user_name') validateCyrillic(e.target);
+    if (e.target.name === 'user_message') validateMassage(e.target);
     if (e.target.name === 'user_email') validateEmail(e.target);
     if (e.target.name === 'user_phone') validatePhone(e.target);
   });
 
-  connect.addEventListener('blur', e => {
+  elem.addEventListener('blur', e => {
     if (e.target.closest('input')) validateEnd(e.target);
   }, true);
 };
-connect(100);
+
+// send-ajax-form
+const sendForm = () => {
+  const preload = () => {
+    const preloader = document.createElement('div');
+    const bounce1 = document.createElement('div');
+    const bounce2 = document.createElement('div');
+    const bounce3 = document.createElement('div');
+    preloader.insertAdjacentElement('beforeend', bounce1);
+    preloader.insertAdjacentElement('beforeend', bounce2);
+    preloader.insertAdjacentElement('beforeend', bounce3);
+
+    preloader.style.cssText = 'display: flex; justify-content: center;';
+
+    let speed = 60;
+    let count1 = 0;
+    let count2 = speed / 3;
+    let count3 = speed * 2 / 3;
+    let way1 = 1;
+    let way2 = 1;
+    let way3 = 1;
+    const animate = () => {
+      count1 += way1;
+      if (count1 >= speed) way1 = -1;
+      if (count1 <= 0) way1 = 1;
+      count2 += way2;
+      if (count2 >= speed) way2 = -1;
+      if (count2 <= 0) way2 = 1;
+      count3 += way3;
+      if (count3 >= speed) way3 = -1;
+      if (count3 <= 0) way3 = 1;
+      bounce1.style.cssText = `width: 20px;
+        height: 20px;
+        border-radius: 100px;
+        background-color: rgb(25, 181, 254);
+        margin-right: 5px;
+        transform: scale(${count1 / speed});`;
+      bounce2.style.cssText = `width: 20px;
+        height: 20px;
+        border-radius: 100px;
+        background-color: rgb(25, 181, 254);
+        margin-right: 5px;
+        transform: scale(${count2 / speed});`;
+      bounce3.style.cssText = `width: 20px;
+        height: 20px;
+        border-radius: 100px;
+        background-color: rgb(25, 181, 254);
+        transform: scale(${count3  / speed});`;
+      requestAnimationFrame(animate);
+    };
+    requestAnimationFrame(animate);
+    return preloader;
+  };
+
+  const errorMessage = 'Что-то пошло не так...',
+    // loadMessage = 'Загрузка...',
+    successMesage = 'Спасибо! Мы скоро с вами свяжемся!';
+
+  const form1 = document.getElementById('form1');
+  const form2 = document.getElementById('form2');
+
+  validate(form1);
+  validate(form2);
+
+  const statusMessage = document.createElement('div');
+  statusMessage.style.cssText = 'font-size: 2rem;';
+
+  const delMessage = () => {
+    setTimeout(() => {
+      statusMessage.remove();
+      statusMessage.textContent = '';
+    }, 3000);
+  };
+
+  const sendForm = form => {
+    form.appendChild(statusMessage);
+    statusMessage.insertAdjacentElement('beforeend', preload());
+
+    const formData = new FormData(form);
+    const body = {};
+
+    // for (let val of formData.entries()) {
+    //   body[val[0]] = val[1];
+    // }
+
+    formData.forEach((val, key) => {
+      body[key] = val;
+    });
+    postData(body,
+      () => {
+        statusMessage.textContent = successMesage;
+        delMessage();
+      }, error => {
+        statusMessage.textContent = errorMessage;
+        console.error(error);
+        delMessage();
+      }
+    );
+    form.querySelectorAll('input').forEach(input => input.value = '');
+  };
+
+  form1.addEventListener('submit', event => {
+    event.preventDefault();
+    sendForm(form1);
+  });
+
+  form2.addEventListener('submit', event => {
+    event.preventDefault();
+    sendForm(form2);
+  });
+
+  const postData = (body, outputData, errorData) => {
+    const request = new XMLHttpRequest();
+    request.addEventListener('readystatechange', () => {
+
+      if (request.readyState !== 4) {
+        return;
+      }
+      if (request.status === 200) {
+        outputData();
+      } else {
+        errorData(request.status);
+      }
+    });
+    request.open('POST', './server.php');
+    // request.setRequestHeader('Content-Type', 'multipart/form-data');
+    request.setRequestHeader('Content-Type', 'application/json');
+
+    // request.send(formData);
+
+    request.send(JSON.stringify(body));
+  };
+};
+sendForm();
