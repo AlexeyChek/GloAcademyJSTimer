@@ -41,30 +41,50 @@ counTimer('19 july 2021 22:00:00');
 // Menu
 const toggleMenu = () => {
   const btnMenu = document.querySelector('.menu'),
-    menu = document.querySelector('menu'),
-    closeBtn = document.querySelector('.close-btn'),
-    menuItems = menu.querySelectorAll('ul>li');
+    menu = document.querySelector('menu');
 
   const handlerMenu = () => menu.classList.toggle('active-menu');
 
-  btnMenu.addEventListener('click', handlerMenu);
+  document.addEventListener('click', event => {
+    const target = event.target;
+    if (!target.closest('menu') && !target.closest('.menu') && menu.classList.contains('active-menu')) {
+      handlerMenu();
+    }
+  });
+
+  btnMenu.addEventListener('click', () => handlerMenu());
 
   menu.addEventListener('click', event => {
     let target = event.target;
     if (target.classList.contains('close-btn')) {
       handlerMenu();
     } else {
-      target = target.closest('li');
+      target = target.closest('a');
       if (target) {
         handlerMenu();
       }
     }
   });
-
-  // closeBtn.addEventListener('click', handlerMenu);
-  // menuItems.forEach(elem => elem.addEventListener('click', handlerMenu));
 };
 toggleMenu();
+
+// smoothScroll
+const smoothScroll = () => {
+  document.addEventListener('click', event => {
+    const target = event.target.closest('a[href^="#"');
+    if (target) {
+      event.preventDefault();
+      const href = target.getAttribute('href').substring(1);
+      const position = document.getElementById(href).getBoundingClientRect().top;
+
+      window.scrollBy({
+        top: position,
+        behavior: 'smooth',
+      });
+    }
+  });
+};
+smoothScroll();
 
 // popup
 const togglePopup = () => {
@@ -350,7 +370,12 @@ const calc = (price = 100) => {
 calc();
 
 // validate
-const validate = (elem) => {
+const validate = (elem, validEnd) => {
+
+  elem.querySelectorAll('input').forEach(item => {
+    item.removeAttribute('required');
+  });
+
   const validateCyrillic = elem => {
     // elem.value = elem.value.replace(/[^а-я -]/gi, '');
     elem.value = elem.value.replace(/[^а-я ]/gi, '');
@@ -368,6 +393,29 @@ const validate = (elem) => {
     elem.value = elem.value.replace(/[^+0-9]/gi, '');
   };
 
+  const getValidError = (elem, text) => {
+    const parent = elem.parentNode;
+    parent.style.cssText = 'position: relative;';
+    const validError = parent.querySelector('.error') || document.createElement('div');
+    validError.className = 'error';
+    validError.textContent = text;
+    parent.insertAdjacentElement('beforeend', validError);
+    validError.style.cssText = `position: absolute;
+    color: #fff;
+    background-color: tomato;
+    padding: 3px 10px;
+    font-size: 1em;
+    border-radius: 19px;`;
+    validError.style.left = `${elem.offsetLeft + ((elem.offsetWidth - validError.offsetWidth) / 2)}px`;
+    validError.style.top = `${elem.offsetTop - ((document.documentElement.clientWidth > 991 && elem.closest('#form1')) ? 57 : 17)}px`;
+  };
+
+  const removeValidError = () => {
+    const parent = elem.parentNode;
+    const error = parent.querySelector('.error');
+    if (error) error.remove();
+  };
+
   const validateEnd = elem => {
     elem.value = elem.value.trim();
     elem.value = elem.value.replace(/-+/g, '-');
@@ -375,19 +423,47 @@ const validate = (elem) => {
     elem.value = elem.value.replace(/^-/, '');
     elem.value = elem.value.replace(/-$/, '');
     if (elem.name === 'user_name') {
-      const text = elem.value.split(' ');
-      text.forEach((item, i) => {
-        text[i] = item[0].toUpperCase() + item.slice(1);
-      });
-      elem.value = text.join(' ');
+      if (!/[а-я]{2,}/.test(elem.value.trim())) {
+        getValidError(elem, 'минимум 2 буквы');
+      } else {
+        removeValidError(elem);
+        const text = elem.value.split(' ');
+        text.forEach((item, i) => {
+          text[i] = item[0].toUpperCase() + item.slice(1);
+        });
+        elem.value = text.join(' ');
+      }
+    }
+    if (elem.name === 'user_email') {
+      if (!/^[^@]{2,}@[^@]{2,}\.\w{2,}/.test(elem.value.trim())) {
+        getValidError(elem, 'неверный e.mail');
+      } else {
+        removeValidError(elem);
+      }
+    }
+    if (elem.name === 'user_phone') {
+      if (!/^\+?([0-9]){6,13}$/.test(elem.value.trim())) {
+        getValidError(elem, 'неверный номер');
+      } else {
+        removeValidError(elem);
+      }
     }
   };
 
   elem.addEventListener('input', e => {
-    if (e.target.name === 'user_name') validateCyrillic(e.target);
-    if (e.target.name === 'user_message') validateMassage(e.target);
-    if (e.target.name === 'user_email') validateEmail(e.target);
-    if (e.target.name === 'user_phone') validatePhone(e.target);
+    const target = e.target;
+    if (target.name === 'user_name') {
+      validateCyrillic(target);
+    }
+    if (target.name === 'user_message') {
+      validateMassage(target);
+    }
+    if (target.name === 'user_email') {
+      validateEmail(target);
+    }
+    if (target.name === 'user_phone') {
+      validatePhone(target);
+    }
   });
 
   elem.addEventListener('blur', e => {
@@ -396,7 +472,7 @@ const validate = (elem) => {
 };
 
 // send-ajax-form
-const sendForm = () => {
+const sendForms = () => {
   const preload = () => {
     const preloader = document.createElement('div');
     const bounce1 = document.createElement('div');
@@ -408,7 +484,7 @@ const sendForm = () => {
 
     preloader.style.cssText = 'display: flex; justify-content: center;';
 
-    let speed = 60;
+    const speed = 60;
     let count1 = 0;
     let count2 = speed / 3;
     let count3 = speed * 2 / 3;
@@ -449,14 +525,16 @@ const sendForm = () => {
   };
 
   const errorMessage = 'Что-то пошло не так...',
-    // loadMessage = 'Загрузка...',
-    successMesage = 'Спасибо! Мы скоро с вами свяжемся!';
+    successMesage = 'Спасибо! Мы скоро с вами свяжемся!',
+    formErrorMessage = 'Заполните все поля!';
 
   const form1 = document.getElementById('form1');
   const form2 = document.getElementById('form2');
+  const form3 = document.getElementById('form3');
 
   validate(form1);
   validate(form2);
+  validate(form3);
 
   const statusMessage = document.createElement('div');
   statusMessage.style.cssText = 'font-size: 2rem;';
@@ -468,31 +546,45 @@ const sendForm = () => {
     }, 3000);
   };
 
+  const validForm = form => {
+    let result = true;
+    form.querySelectorAll('input').forEach(elem => {
+      if (elem.name === 'user_name' || elem.name === 'user_email' || elem.name === 'user_phone') {
+        if (elem.value.length === 0) result = false;
+      }
+    });
+    return result;
+  };
+
   const sendForm = form => {
     form.appendChild(statusMessage);
-    statusMessage.insertAdjacentElement('beforeend', preload());
+    if (!validForm(form)) {
+      statusMessage.textContent = formErrorMessage;
+    } else {
+      statusMessage.textContent = '';
+      statusMessage.insertAdjacentElement('beforeend', preload());
+      const formData = new FormData(form);
+      const body = {};
 
-    const formData = new FormData(form);
-    const body = {};
+      // for (let val of formData.entries()) {
+      //   body[val[0]] = val[1];
+      // }
 
-    // for (let val of formData.entries()) {
-    //   body[val[0]] = val[1];
-    // }
-
-    formData.forEach((val, key) => {
-      body[key] = val;
-    });
-    postData(body,
-      () => {
-        statusMessage.textContent = successMesage;
-        delMessage();
-      }, error => {
-        statusMessage.textContent = errorMessage;
-        console.error(error);
-        delMessage();
-      }
-    );
-    form.querySelectorAll('input').forEach(input => input.value = '');
+      formData.forEach((val, key) => {
+        body[key] = val;
+      });
+      postData(body,
+        () => {
+          statusMessage.textContent = successMesage;
+          delMessage();
+        }, error => {
+          statusMessage.textContent = errorMessage;
+          console.error(error);
+          delMessage();
+        }
+      );
+      form.querySelectorAll('input').forEach(input => input.value = '');
+    }
   };
 
   form1.addEventListener('submit', event => {
@@ -503,6 +595,11 @@ const sendForm = () => {
   form2.addEventListener('submit', event => {
     event.preventDefault();
     sendForm(form2);
+  });
+
+  form3.addEventListener('submit', event => {
+    event.preventDefault();
+    sendForm(form3);
   });
 
   const postData = (body, outputData, errorData) => {
@@ -527,4 +624,4 @@ const sendForm = () => {
     request.send(JSON.stringify(body));
   };
 };
-sendForm();
+sendForms();
