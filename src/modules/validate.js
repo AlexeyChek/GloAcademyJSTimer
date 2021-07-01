@@ -5,7 +5,6 @@ const validate = elem => {
   });
 
   const validateCyrillic = elem => {
-    // elem.value = elem.value.replace(/[^а-я -]/gi, '');
     elem.value = elem.value.replace(/[^а-я ]/gi, '');
   };
 
@@ -17,7 +16,6 @@ const validate = elem => {
     elem.value = elem.value.replace(/[^a-z\_@\.!~\*'-]/gi, '');
   };
   const validatePhone = elem => {
-    // elem.value = elem.value.replace(/[^0-9()-]/gi, '');
     elem.value = elem.value.replace(/[^+0-9]/, '');
     if (elem.value.length > 12) elem.value = elem.value.substring(0, 12);
   };

@@ -104,10 +104,6 @@ const sendForms = () => {
       const formData = new FormData(form);
       const body = {};
 
-      // for (let val of formData.entries()) {
-      //   body[val[0]] = val[1];
-      // }
-
       formData.forEach((val, key) => {
         body[key] = val;
       });
