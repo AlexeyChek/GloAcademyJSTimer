@@ -573,17 +573,14 @@ const sendForms = () => {
       formData.forEach((val, key) => {
         body[key] = val;
       });
-      postData(body,
-        () => {
-          statusMessage.textContent = successMesage;
-          delMessage();
-        }, error => {
-          statusMessage.textContent = errorMessage;
-          console.error(error);
-          delMessage();
-        }
-      );
-      form.querySelectorAll('input').forEach(input => input.value = '');
+      postData(body).then(() => {
+        statusMessage.textContent = successMesage;
+        delMessage();
+      }).catch(error => {
+        statusMessage.textContent = errorMessage;
+        console.error(error);
+        delMessage();
+      }).finally(form.querySelectorAll('input').forEach(input => input.value = ''));
     }
   };
 
@@ -602,17 +599,16 @@ const sendForms = () => {
     sendForm(form3);
   });
 
-  const postData = (body, outputData, errorData) => {
+  const postData = body => new Promise((resolve, reject) => {
     const request = new XMLHttpRequest();
     request.addEventListener('readystatechange', () => {
-
       if (request.readyState !== 4) {
         return;
       }
       if (request.status === 200) {
-        outputData();
+        resolve();
       } else {
-        errorData(request.status);
+        reject(request.status);
       }
     });
     request.open('POST', './server.php');
@@ -622,6 +618,6 @@ const sendForms = () => {
     // request.send(formData);
 
     request.send(JSON.stringify(body));
-  };
+  });
 };
 sendForms();
