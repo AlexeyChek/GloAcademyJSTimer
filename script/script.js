@@ -558,6 +558,12 @@ const sendForms = () => {
     return result;
   };
 
+  const postData = body => fetch('./server.php', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
   const sendForm = form => {
     form.appendChild(statusMessage);
     if (!validForm(form)) {
@@ -575,7 +581,10 @@ const sendForms = () => {
       formData.forEach((val, key) => {
         body[key] = val;
       });
-      postData(body).then(() => {
+      postData(body).then(response => {
+        if (response.status !== 200) {
+          throw new Error('status network not 200');
+        }
         statusMessage.textContent = successMesage;
         delMessage();
       }).catch(error => {
@@ -599,27 +608,6 @@ const sendForms = () => {
   form3.addEventListener('submit', event => {
     event.preventDefault();
     sendForm(form3);
-  });
-
-  const postData = body => new Promise((resolve, reject) => {
-    const request = new XMLHttpRequest();
-    request.addEventListener('readystatechange', () => {
-      if (request.readyState !== 4) {
-        return;
-      }
-      if (request.status === 200) {
-        resolve();
-      } else {
-        reject(request.status);
-      }
-    });
-    request.open('POST', './server.php');
-    // request.setRequestHeader('Content-Type', 'multipart/form-data');
-    request.setRequestHeader('Content-Type', 'application/json');
-
-    // request.send(formData);
-
-    request.send(JSON.stringify(body));
   });
 };
 sendForms();
