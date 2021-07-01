@@ -72,14 +72,16 @@ toggleMenu();
 const smoothScroll = () => {
   document.addEventListener('click', event => {
     event.preventDefault();
-    const target = event.target.closest('li>a[href^="#"');
+    const target = event.target.closest('a[href^="#"');
     if (target) {
-      const href = target.getAttribute('href').substring(1);
-      const position = document.getElementById(href).getBoundingClientRect().top;
-      window.scrollBy({
-        top: position,
-        behavior: 'smooth',
-      });
+      if (!target.classList.contains('close-btn') && !target.classList.contains('portfolio-btn')) {
+        const href = target.getAttribute('href').substring(1);
+        const position = document.getElementById(href).getBoundingClientRect().top;
+        window.scrollBy({
+          top: position,
+          behavior: 'smooth',
+        });
+      }
     }
   });
 };
