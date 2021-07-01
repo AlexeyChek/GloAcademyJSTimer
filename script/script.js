@@ -71,12 +71,11 @@ toggleMenu();
 // smoothScroll
 const smoothScroll = () => {
   document.addEventListener('click', event => {
-    const target = event.target.closest('a[href^="#"');
+    event.preventDefault();
+    const target = event.target.closest('li>a[href^="#"');
     if (target) {
-      event.preventDefault();
       const href = target.getAttribute('href').substring(1);
       const position = document.getElementById(href).getBoundingClientRect().top;
-
       window.scrollBy({
         top: position,
         behavior: 'smooth',
@@ -370,7 +369,7 @@ const calc = (price = 100) => {
 calc();
 
 // validate
-const validate = (elem, validEnd) => {
+const validate = elem => {
 
   elem.querySelectorAll('input').forEach(item => {
     item.removeAttribute('required');
@@ -390,7 +389,8 @@ const validate = (elem, validEnd) => {
   };
   const validatePhone = elem => {
     // elem.value = elem.value.replace(/[^0-9()-]/gi, '');
-    elem.value = elem.value.replace(/[^+0-9]/gi, '');
+    elem.value = elem.value.replace(/[^+0-9]/, '');
+    if (elem.value.length > 12) elem.value = elem.value.substring(0, 12);
   };
 
   const getValidError = (elem, text) => {
@@ -537,7 +537,7 @@ const sendForms = () => {
   validate(form3);
 
   const statusMessage = document.createElement('div');
-  statusMessage.style.cssText = 'font-size: 2rem;';
+  statusMessage.style.cssText = 'font-size: 2rem; color: #fff';
 
   const delMessage = () => {
     setTimeout(() => {
