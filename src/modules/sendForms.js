@@ -82,13 +82,18 @@ const sendForms = () => {
     let result = true;
     form.querySelectorAll('input').forEach(elem => {
       if (elem.name === 'user_name' || elem.name === 'user_email' || elem.name === 'user_phone') {
-        if (elem.value.length === 0) result = false;
+        if (elem.value.length === 0) {
+          result = false;
+        }
+        if (elem.parentNode.querySelector('.error')) {
+          result = false;
+        }
       }
     });
     return result;
   };
 
-  const postData = body => fetch('./../server.php', {
+  const postData = body => fetch('../server.php', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
