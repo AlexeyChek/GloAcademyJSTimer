@@ -1,11 +1,11 @@
 const toggleMenu = () => {
-  const btnMenu = document.querySelector('.menu'),
-    menu = document.querySelector('menu');
+  // const btnMenu = document.querySelector('.menu'),
+  const  menu = document.querySelector('menu');
 
   const handlerMenu = () => menu.classList.toggle('active-menu');
 
   document.addEventListener('click', event => {
-    const target = event.target;
+    let target = event.target;
     if (!target.closest('menu') && !target.closest('.menu') && menu.classList.contains('active-menu')) {
       handlerMenu();
     }
