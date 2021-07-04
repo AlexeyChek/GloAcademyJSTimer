@@ -8,6 +8,7 @@ import tabs from './modules/tabs';
 import slider from './modules/slider';
 import command from './modules/command';
 import calc from './modules/calc';
+import Validator from './modules/validate-lesson25';
 import sendForms from './modules/sendForms';
 
 counTimer('19 july 2021 22:00:00');
@@ -26,4 +27,4 @@ command();
 
 calc();
 
-sendForms();
+sendForms(Validator);

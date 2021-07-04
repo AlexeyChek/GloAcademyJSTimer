@@ -1,7 +1,7 @@
-import validate from './validate';
+// import validate from './validate';
 
 
-const sendForms = () => {
+const sendForms = (Validator) => {
   const preload = () => {
     const preloader = document.createElement('div');
     const bounce1 = document.createElement('div');
@@ -61,9 +61,61 @@ const sendForms = () => {
   const form2 = document.getElementById('form2');
   const form3 = document.getElementById('form3');
 
-  validate(form1);
-  validate(form2);
-  validate(form3);
+  const validForm1 = new Validator({
+    selector: '#form1',
+    pattern: {
+      name: /[а-я]{2,}/,
+    },
+    method: {
+      'phone': [
+        ['notEmpty'],
+        ['pattern', 'phone'],
+      ],
+      'email': [
+        ['notEmpty'],
+        ['pattern', 'email'],
+      ],
+      'name': [
+        ['notEmpty'],
+        ['pattern', 'name'],
+      ]
+    }
+  });
+  validForm1.init();
+
+  const validForm2 = new Validator({
+    selector: '#form2',
+    method: {
+      'phone': [
+        ['notEmpty'],
+        ['pattern', 'phone'],
+      ],
+      'email': [
+        ['notEmpty'],
+        ['pattern', 'email'],
+      ]
+    }
+  });
+  validForm2.init();
+
+  const validForm3 = new Validator({
+    selector: '#form3',
+    method: {
+      'phone': [
+        ['notEmpty'],
+        ['pattern', 'phone'],
+      ],
+      'email': [
+        ['notEmpty'],
+        ['pattern', 'email'],
+      ]
+    }
+  });
+  validForm3.init();
+
+  // validate(form1);
+  // validate(form2);
+  // validate(form3);
 
   const statusMessage = document.createElement('div');
   statusMessage.style.cssText = 'font-size: 2rem; color: #fff';
@@ -78,20 +130,20 @@ const sendForms = () => {
     }, 2000);
   };
 
-  const validForm = form => {
-    let result = true;
-    form.querySelectorAll('input').forEach(elem => {
-      if (elem.name === 'user_name' || elem.name === 'user_email' || elem.name === 'user_phone') {
-        if (elem.value.length === 0) {
-          result = false;
-        }
-        if (elem.parentNode.querySelector('.error')) {
-          result = false;
-        }
-      }
-    });
-    return result;
-  };
+  // const validForm = form => {
+  //   let result = true;
+  //   form.querySelectorAll('input').forEach(elem => {
+  //     if (elem.name === 'user_name' || elem.name === 'user_email' || elem.name === 'user_phone') {
+  //       if (elem.value.length === 0) {
+  //         result = false;
+  //       }
+  //       if (elem.parentNode.querySelector('.error')) {
+  //         result = false;
+  //       }
+  //     }
+  //   });
+  //   return result;
+  // };
 
   const postData = body => fetch('server.php', {
     method: 'POST',
@@ -99,9 +151,9 @@ const sendForms = () => {
     body: JSON.stringify(body),
   });
 
-  const sendForm = form => {
+  const sendForm = (form, status) => {
     form.appendChild(statusMessage);
-    if (!validForm(form)) {
+    if (!status) {
       statusMessage.textContent = formErrorMessage;
     } else {
       statusMessage.textContent = '';
@@ -128,17 +180,17 @@ const sendForms = () => {
 
   form1.addEventListener('submit', event => {
     event.preventDefault();
-    sendForm(form1);
+    sendForm(form1, validForm1.checkValid());
   });
 
   form2.addEventListener('submit', event => {
     event.preventDefault();
-    sendForm(form2);
+    sendForm(form2, validForm2.checkValid());
   });
 
   form3.addEventListener('submit', event => {
     event.preventDefault();
-    sendForm(form3);
+    sendForm(form3, validForm3.checkValid());
   });
 };
 
