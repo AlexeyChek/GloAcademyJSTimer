@@ -1,6 +1,3 @@
-// import validate from './validate';
-
-
 const sendForms = (Validator) => {
   const preload = () => {
     const preloader = document.createElement('div');
@@ -113,10 +110,6 @@ const sendForms = (Validator) => {
   });
   validForm3.init();
 
-  // validate(form1);
-  // validate(form2);
-  // validate(form3);
-
   const statusMessage = document.createElement('div');
   statusMessage.style.cssText = 'font-size: 2rem; color: #fff';
 
@@ -129,21 +122,6 @@ const sendForms = (Validator) => {
       document.querySelector('.popup').style.display = 'none';
     }, 2000);
   };
-
-  // const validForm = form => {
-  //   let result = true;
-  //   form.querySelectorAll('input').forEach(elem => {
-  //     if (elem.name === 'user_name' || elem.name === 'user_email' || elem.name === 'user_phone') {
-  //       if (elem.value.length === 0) {
-  //         result = false;
-  //       }
-  //       if (elem.parentNode.querySelector('.error')) {
-  //         result = false;
-  //       }
-  //     }
-  //   });
-  //   return result;
-  // };
 
   const postData = body => fetch('server.php', {
     method: 'POST',

@@ -122,20 +122,4 @@ class Validator {
   }
 }
 
-
-// const valid = new Validator({
-//   selector: '#myform',
-//   pattern: {},
-//   method: {
-//     'phone': [
-//       ['notEmpty'],
-//       ['pattern', 'phone'],
-//     ],
-//     'email': [
-//       ['notEmpty'],
-//       ['pattern', 'email'],
-//     ]
-//   }
-// });
-
 export default Validator;
