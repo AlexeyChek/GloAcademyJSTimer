@@ -1,5 +1,4 @@
 const toggleMenu = () => {
-  // const btnMenu = document.querySelector('.menu'),
   const  menu = document.querySelector('menu');
 
   const handlerMenu = () => menu.classList.toggle('active-menu');
@@ -8,13 +7,13 @@ const toggleMenu = () => {
     let target = event.target;
     if (!target.closest('menu') && !target.closest('.menu') && menu.classList.contains('active-menu')) {
       handlerMenu();
-    }
-    if (target.closest('.menu')) handlerMenu();
-    if (target.classList.contains('close-btn')) {
+    } else if (target.closest('.menu')) {
+      handlerMenu();
+    } else if (target.classList.contains('close-btn')) {
       handlerMenu();
     } else {
       target = target.closest('a');
-      if (target) {
+      if (target.closest('.active-menu')) {
         handlerMenu();
       }
     }
