@@ -13,7 +13,7 @@ const toggleMenu = () => {
       handlerMenu();
     } else {
       target = target.closest('a');
-      if (target.closest('.active-menu')) {
+      if (target && target.closest('.active-menu')) {
         handlerMenu();
       }
     }
